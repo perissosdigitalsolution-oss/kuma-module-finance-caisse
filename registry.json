@@ -1,0 +1,27 @@
+{
+  "modules": [
+    {
+      "id": "kuma-module-finance-caisse",
+      "name": "Petite Caisse & Reçus (Côte d'Ivoire)",
+      "version": "1.0.0",
+      "category": "financial",
+      "country": "CI",
+      "target": "primary",
+      "contract": "v1",
+      "repository": "https://github.com/perissosdigitalsolution-oss/kuma-module-finance-caisse",
+      "description": "Gestion de la petite caisse avec encaissements, reçus PDF, paiements échelonnés.",
+      "tags": [
+        "finance",
+        "receipts",
+        "pdf",
+        "installments"
+      ],
+      "capabilities": {
+        "hasBridgeMode": true,
+        "supportsReçusPdf": true,
+        "supportsÉchelonnement": true,
+        "supportsImpressionThermique": true
+      }
+    }
+  ]
+}
