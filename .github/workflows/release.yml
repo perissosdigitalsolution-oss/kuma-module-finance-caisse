@@ -1,17 +1,39 @@
 name: Build & Release Finance Module
-on: { push: { tags: ['v*'] } }
-permissions: { contents: write }
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '22', cache: 'npm' }
-      - working-directory: modules/finance-caisse
-        run: npm ci --legacy-peer-deps
-      - working-directory: modules/finance-caisse
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Standalone repos have the module at the ROOT: no npm deps are needed
+      # to build the distributable (deps are symlinked host-side, excluded
+      # from the zip), so there is no `npm ci` and no lockfile requirement.
+      - name: Generate Distribution ZIP
         run: node scripts/install.mjs --zip
-      - uses: softprops/action-gh-release@v2
-        with: { files: modules/finance-caisse/*.zip, generate_release_notes: true }
-        env: { GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Collect ZIP into workspace
+        run: mv -f ../*.zip . && ls -la *.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: '*.zip'
+          generate_release_notes: true
+          prerelease: ${ contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') }
+        env:
+          GITHUB_TOKEN: ${ secrets.GITHUB_TOKEN }
