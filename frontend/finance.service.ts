@@ -1,4 +1,6 @@
-const API = '/api/v1/modules/finance';
+const API = (typeof window !== 'undefined' && !['localhost','127.0.0.1'].includes(window.location.hostname) && !window.location.hostname.startsWith('192.168.') && !window.location.hostname.startsWith('10.'))
+    ? 'https://kuma-school-backend-production.kumaschool88.workers.dev/api/v1/modules/finance'
+    : '/api/v1/modules/finance';
 export const FinanceService = {
     async createTransaction(data: { studentId?: string; type: string; amount: number; description: string; paymentMethod: string; mobileOperator?: string }) {
         const r = await fetch(`${API}/transaction`, {
