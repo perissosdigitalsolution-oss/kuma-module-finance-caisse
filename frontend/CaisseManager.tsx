@@ -1,19 +1,27 @@
 import React from 'react';
 import { FinanceService } from './finance.service';
 
-export default function CaisseManager({ lang = 'fr' }) {
+interface Props {
+    lang?: 'fr' | 'en';
+    /** Explicit module API base (host injects it). */
+    apiBase?: string;
+    /** Token provider (host injects it). */
+    getToken?: () => string | null;
+}
+
+export default function CaisseManager({ lang = 'fr', apiBase, getToken }: Props) {
     const [loading, setLoading] = React.useState(false);
     const [message, setMessage] = React.useState(null);
     const [summary, setSummary] = React.useState(null);
 
-    React.useEffect(() => { FinanceService.getSummary().then(setSummary).catch(() => {}); }, []);
+    React.useEffect(() => { FinanceService.getSummary({ apiBase, getToken }).then(setSummary).catch(() => {}); }, []);
 
     const handlePayment = async () => {
         const amount = Number(prompt(lang === 'fr' ? 'Montant (FCFA):' : 'Amount (FCFA):'));
         if (!amount || amount <= 0) return;
         setLoading(true);
         try {
-            const res = await FinanceService.createTransaction({ type: 'tranche', amount, description: 'Paiement école', paymentMethod: 'mobile' });
+            const res = await FinanceService.createTransaction({ type: 'tranche', amount, description: 'Paiement école', paymentMethod: 'mobile' }, { apiBase, getToken });
             setMessage(res.success ? (lang === 'fr' ? 'Paiement enregistré' : 'Payment recorded') : 'Erreur');
             setSummary({ total_encaisse: (summary?.total_encaisse || 0) + amount });
         } catch(e) { setMessage(lang === 'fr' ? 'Erreur' : 'Error'); }
