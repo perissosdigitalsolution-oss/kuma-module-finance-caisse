@@ -47,7 +47,7 @@ export interface FinanceOptions {
 
 export const FinanceService = {
     async createTransaction(data: { studentId?: string; type: string; amount: number; description: string; paymentMethod: string; mobileOperator?: string }, opts?: FinanceOptions) {
-        const r = await fetch(`${resolveApiBase(opts?.apiBase)}/transaction`, {
+        const r = await fetch(`${resolveApiBase(opts?.apiBase)}/v1/transaction`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${resolveToken(opts?.getToken)}` },
             body: JSON.stringify(data)
@@ -56,19 +56,19 @@ export const FinanceService = {
     },
     async getTransactions(filters?: { type?: string; period?: string }, opts?: FinanceOptions) {
         const q = new URLSearchParams(Object.entries(filters || {}).filter(([, v]) => v));
-        const r = await fetch(`${resolveApiBase(opts?.apiBase)}/transactions?${q}`, {
+        const r = await fetch(`${resolveApiBase(opts?.apiBase)}/v1/transactions?${q}`, {
             headers: { 'Authorization': `Bearer ${resolveToken(opts?.getToken)}` }
         });
         return r.json();
     },
     async getReceipt(transId: string, opts?: FinanceOptions) {
-        const r = await fetch(`${resolveApiBase(opts?.apiBase)}/receipt/${transId}`, {
+        const r = await fetch(`${resolveApiBase(opts?.apiBase)}/v1/receipt/${transId}`, {
             headers: { 'Authorization': `Bearer ${resolveToken(opts?.getToken)}` }
         });
         return r.json();
     },
     async getSummary(opts?: FinanceOptions) {
-        const r = await fetch(`${resolveApiBase(opts?.apiBase)}/summary`, {
+        const r = await fetch(`${resolveApiBase(opts?.apiBase)}/v1/summary`, {
             headers: { 'Authorization': `Bearer ${resolveToken(opts?.getToken)}` }
         });
         const d = await r.json();
